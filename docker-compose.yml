@@ -1,0 +1,97 @@
+version: "3"
+services:
+
+  steamcache-dns:
+    restart: unless-stopped
+    image: steamcache/steamcache-dns:latest
+    environment:
+      - UPSTREAM_DNS: "1.1.1.1"
+      - STEAMCACHE_IP: "192.168.1.50"
+      - ORIGINCACHE_IP: "192.168.1.51"
+      - BLIZZARDCACHE_IP: "192.168.1.52"
+      - RIOTCACHE_IP: "192.168.1.53"
+      - FRONTIERCACHE_IP: "192.168.1.54"
+      - WINDOWSCACHE_IP: "192.168.1.55"
+    ports:
+      - "53:53/udp"
+    networks:
+        vpcbr:
+          ipv4_address: 192.168.1.50
+
+  sniproxy:
+    restart: unless-stopped
+    image: steamcache/sniproxy:latest
+    ports:
+      - "443:443"
+
+  steam-cache:
+    restart: unless-stopped
+    image: steamcache/generic:latest
+    volumes:
+        - cache/steam/data:/data/cache
+        - cache/steam/logs:/data/logs
+    ports:
+      - "80:80"
+    networks:
+        vpcbr:
+          ipv4_address: 192.168.1.50
+
+  origin-cache:
+    restart: unless-stopped
+    image: steamcache/generic:latest
+    volumes:
+        - cache/origin/data:/data/cache
+        - cache/origin/logs:/data/logs
+    ports:
+      - "80:80"
+    networks:
+        vpcbr:
+          ipv4_address: 192.168.1.51
+
+  blizzard-cache:
+    restart: unless-stopped
+    image: steamcache/generic:latest
+    volumes:
+        - cache/blizzard/data:/data/cache
+        - cache/blizzard/logs:/data/logs
+    ports:
+      - "80:80"
+    networks:
+        vpcbr:
+          ipv4_address: 192.168.1.52
+
+  riot-cache:
+    restart: unless-stopped
+    image: steamcache/generic:latest
+    volumes:
+        - cache/riot/data:/data/cache
+        - cache/riot/logs:/data/logs
+    ports:
+      - "80:80"
+    networks:
+        vpcbr:
+          ipv4_address: 192.168.1.53
+
+  fontier-cache:
+    restart: unless-stopped
+    image: steamcache/generic:latest
+    volumes:
+        - cache/fontier/data:/data/cache
+        - cache/fontier/logs:/data/logs
+    ports:
+      - "80:80"
+    networks:
+        vpcbr:
+          ipv4_address: 192.168.1.54
+
+  windows-cache:
+    restart: unless-stopped
+    image: steamcache/generic:latest
+    volumes:
+        - cache/windows/data:/data/cache
+        - cache/windows/logs:/data/logs
+    ports:
+      - "80:80"
+    networks:
+        vpcbr:
+          ipv4_address: 192.168.1.55
